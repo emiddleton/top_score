@@ -21,8 +21,15 @@ default: &default
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
-development:
+development_default: &development_default
   <<: *default
+  host: 127.0.0.1
+  port: 5432
+  user: developer
+  password: development-password
+
+development:
+  <<: *development_default
   database: topscore_development
 
   # The specified database role being used to connect to postgres.
@@ -30,22 +37,17 @@ development:
   # When left blank, postgres will use the default role. This is
   # the same name as the operating system user running Rails.
   #username: topscore
-
   # The password associated with the postgres role (username).
   #password:
-
   # Connect on a TCP socket. Omitted by default since the client uses a
   # domain socket that doesn't need configuration. Windows does not have
   # domain sockets, so uncomment these lines.
   #host: localhost
-
   # The TCP port the server listens on. Defaults to 5432.
   # If your server runs on a different port number, change accordingly.
   #port: 5432
-
   # Schema search path. The server defaults to $user,public
   #schema_search_path: myapp,sharedapp,public
-
   # Minimum log levels, in increasing order:
   #   debug5, debug4, debug3, debug2, debug1,
   #   log, notice, warning, error, fatal, and panic
@@ -56,7 +58,7 @@ development:
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  <<: *default
+  <<: *development_default
   database: topscore_test
 
 # As with config/credentials.yml, you never want to store sensitive information,
@@ -81,6 +83,4 @@ test:
 #
 production:
   <<: *default
-  database: topscore_production
-  username: topscore
-  password: <%= ENV['TOPSCORE_DATABASE_PASSWORD'] %>
+  url: <%= ENV['TOPSCORE_DATABASE_URL'] %>

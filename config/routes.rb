@@ -1,3 +1,7 @@
+# frozen_string_literal: false
+
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  resources :scores, only: %i[index create show destroy]
+
+  get 'players/:name', to: 'players#show'
 end
