@@ -37,8 +37,7 @@ docker run -e POSTGRES_USER=developer \
 When this completes you will need to create the initial database with
 
 ```console
-rails db:create
-rails db:migrate
+rails db:create db:migrate
 ```
 
 ### What to do if you have an existing postgresql server running
