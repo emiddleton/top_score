@@ -31,9 +31,11 @@ class Score < ApplicationRecord
   end
 
   def name=(name)
+    retries ||= 0
     self.player = Player.find_or_create_by(name: name)
-  rescue ActiveRecord::RecordNotUnique
-    retry
+  rescue StandardError => e
+    retry if (retries += 1) < 3
+    raise e
   end
 
   def attributes

@@ -16,6 +16,32 @@ RSpec.describe Score, type: :model do
       end
     end
 
+    def serialize_exception
+      ActiveRecord::SerializationFailure.new
+    end
+
+    context 'when creating a new player conflicts with another call' do
+      it 'retries the find_or_create_by and succeeds' do
+        score = attributes_for(:score)
+        player = Player.find_or_create_by(name: score[:name])
+
+        # Player.find_or_create_by fails once then return result
+        call_count = 0
+        expect(Player).to receive(:find_or_create_by) do
+          call_count += 1
+          call_count < 2 ? raise(serialize_exception) : player
+        end.twice
+
+        score = Score.create!(attributes_for(:score))
+        expect(Player.where(name: score.name)).to exist
+      end
+
+      it 'retries the find_or_create_by 3 times then fail' do
+        expect(Player).to receive(:find_or_create_by).exactly(3).times.and_raise(serialize_exception)
+        expect { Score.create!(attributes_for(:score)) }.to raise_error(ActiveRecord::SerializationFailure)
+      end
+    end
+
     context 'when existing player exists' do
       it 'uses the existing player' do
         score1 = create(:score)
